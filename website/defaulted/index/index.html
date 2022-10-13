@@ -1,0 +1,60 @@
+{% extends "../layouts/master.html" %}
+
+{% block title %}首页{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <div id="homeBanner" class="banner-wrap" hidden>
+        <div class="swipe-wrap">
+            {% for adv in data.advs %}
+                <div class="swipe-items">
+                    <a href="{{ adv.Link }}" title="{{ adv.Title }}" target="_blank">
+                        <img src="{{ adv.Smallimg }}" alt="{{ adv.Title }}" />
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <a id="swipeLeft" title="向前" class="swipe-left" href="javascript:void(0)">&lt;</a>
+        <a id="swipeRight" title="向后" class="swipe-right" href="javascript:void(0)">&gt;</a>
+        <div id="homeBannerNum" class="swipe-num"></div>
+    </div>
+    <!--/banner-->
+    <div class="new-article">
+        {% for vo in data.blogList %}
+            <div class="app-blog-item clearfix">
+                <div class="app-blog-title">
+                    <a href="/blog/{{ vo.Id }}" target="_blank" title="{{ vo.Title }}">{{ vo.Title }}</a>
+                </div>
+                <div class="app-blog-body">
+                    <div class="app-blog-content">{{ vo.Description }}</div>
+                </div>
+                <div class="blog-title-info">
+                    <div class="title-info-list space-between">
+                        <div class="assist">
+                            <div class="date"><i class="fa fa-calendar-o"></i><b>{{ vo.Createtime | slice:":10" }}</b></div>
+                            <i>/</i>
+                            <div class="comment"><i class="fa fa-comment-o"></i><b>0</b> 评论</div>
+                            <i>/</i>
+                            <div class="like"><i class="fa fa-thumbs-o-up"></i><b>{{ vo.Likes }}</b> 点赞</div>
+                            <i>/</i>
+                            <div class="views"><i class="fa fa-eye"></i><b>{{ vo.Views }}</b> 阅读</div>
+                        </div>
+                        <div class="category">
+                            <a title="{{ vo.ColTitle }}" href="/blog/category/{{ vo.Catid }}">
+                                <i class="fa fa-sitemap"></i><b>{{ vo.ColTitle }}</b>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div>暂无数据</div>
+        {% endfor %}
+    </div>
+    <div class="home-loading">
+        <a class="loading-more" href="/blog">查看更多</a>
+    </div>
+    <!--/category-->
+{% endblock %}

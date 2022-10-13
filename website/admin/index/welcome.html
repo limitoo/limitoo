@@ -1,0 +1,68 @@
+{% include "../common/_app_css.html" %}
+<style>
+    .layui-form-label{
+        width:140px;
+    }
+    .layui-input-block{
+        margin-left:170px;
+    }
+    .app-serve-content{
+        padding:25px 30px;
+    }
+</style>
+<div class="app-main-inner">
+    <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">后台首页</li>
+        </ul>
+        <div class="layui-tab-content app-serve-content">
+            <div class="layui-tab-item layui-show">
+                <blockquote class="layui-elem-quote layui-text">快捷操作</blockquote>
+                <div class="layui-form-item app-shortcut">
+                    <a href="blog"><i class="layui-icon layui-icon-file"></i>新增文章</a>
+                    <a href="category"><i class="layui-icon layui-icon-list"></i>新增分类</a>
+                    <a href="comment"><i class="layui-icon layui-icon-mike"></i>文章评论</a>
+                    <a href="message"><i class="layui-icon layui-icon-chat"></i>留言管理</a>
+                    <a href="link"><i class="layui-icon layui-icon-link"></i>友情链接</a>
+                    <a href="banner"><i class="layui-icon layui-icon-picture"></i>广告管理</a>
+                </div>
+                <blockquote class="layui-elem-quote layui-text">服务器环境</blockquote>
+                {% for key, value in info %}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">{{ key }}</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" required lay-verify="required" disabled class="layui-input" value="{{ value }}">
+                        </div>
+                    </div>
+                {% endfor %}
+                <blockquote class="layui-elem-quote layui-text">使用帮助</blockquote>
+                <div class="layui-row">
+                    <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Golang交流群</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" required lay-verify="required" disabled class="layui-input" value="105545914">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Vue交流群</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" required lay-verify="required" disabled class="layui-input" value="364912432">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Javascript交流群</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" required lay-verify="required" disabled class="layui-input" value="492107297">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

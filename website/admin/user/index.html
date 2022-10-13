@@ -1,0 +1,161 @@
+{% include "../common/_app_css.html" %}
+<div class="layui-fluid" id="app">
+    <el-row :gutter="[20, 10]">
+
+        <el-col :span="6" :xs="24">
+            <el-card class="app-user-card-item app-user-info">
+                <div class="user-profile">
+                    <div class="user-photo">
+                        <span className="avatar-container">
+                            <el-avatar class="avatar" :size="size" :src="avatar"></el-avatar>
+                        </span>
+                        <div class="name" v-html="userForm.nickname"></div>
+                        <div class="slogon" v-html="userForm.description"></div>
+                        <div class="role">管理员</div>
+                    </div>
+                    <div class="user-info">
+                        <ul class="user-info-list">
+                            <li><i class="fa fa-calendar"></i>1995/5/5</li>
+                            <li>
+                                <i class="fa fa-male"></i>
+                                <template v-if="userForm.sex == 1">男</template>
+                                <template v-else>女</template>
+                            </li>
+                            <li><i class="fa fa-sitemap"></i>集团 - 事业群 - 技术部</li>
+                            <li><i class="fa fa-tag"></i><b v-html="userForm.address"></b></li>
+                            <li><i class="fa fa-code"></i>JavaScript、Vue、Node</li>
+                        </ul>
+                    </div>
+                </div>
+            </el-card>
+        </el-col>
+
+        <el-col :span="18" :xs="24">
+            <el-card class="app-user-card-item app-user-options">
+                <el-tabs v-model="activeTab">
+                    <el-tab-pane label="基础信息" name="activity">
+                        <el-form ref="userForm" class="app-user-form" :model="userForm" label-width="80px">
+                            <el-form-item label="邮箱">
+                                <el-input v-model="userForm.email"></el-input>
+                            </el-form-item>
+                            <el-form-item label="昵称">
+                                <el-input v-model="userForm.nickname"></el-input>
+                            </el-form-item>
+                            <el-form-item label="性别">
+                                <el-radio v-model="userForm.sex" :label="1">男</el-radio>
+                                <el-radio v-model="userForm.sex" :label="2">女</el-radio>
+                            </el-form-item>
+                            <el-form-item label="个人简介">
+                                <el-input type="textarea" v-model="userForm.description"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="onSubmit">保存</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-tab-pane>
+                    <el-tab-pane label="安全设置" name="timeline">
+                        <ul class="app-user-setting">
+                            <li class="item">
+                                <div class="body">
+                                    <div class="title">账户密码</div>
+                                    <div class="desc">当前密码强度：强</div>
+                                </div>
+                                <div class="action">
+                                    <el-button @click="handleUpdate">修改</el-button>
+                                </div>
+                            </li>
+                            <li class="item">
+                                <div class="body">
+                                    <div class="title">密保手机</div>
+                                    <div class="desc">已绑定手机：152****3441</div>
+                                </div>
+                                <div class="action">
+                                    <el-button @click="handleUpdate">修改</el-button>
+                                </div>
+                            </li>
+                            <li class="item">
+                                <div class="body">
+                                    <div class="title">备用邮箱</div>
+                                    <div class="desc">当前未绑定备用邮箱</div>
+                                </div>
+                                <div class="action">
+                                    <el-button @click="handleUpdate">修改</el-button>
+                                </div>
+                            </li>
+                        </ul>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-card>
+        </el-col>
+
+    </el-row>
+</div>
+{% include "../common/_app_js.html" %}
+
+<script>
+    var vm = app.vue({
+        el: '#app',
+        data() {
+            return {
+                size: 100,
+                activeTab: 'activity',
+                avatar: 'https://pica.zhimg.com/691df473a_is.jpg',
+                queryForm: {
+                    id: 1,
+                },
+                userForm: {},
+                loading: true,
+            }
+        },
+        created() {
+            this.getUserInfo()
+        },
+        methods: {
+            getUserInfo() {
+                app.request({
+                    method: 'get',
+                    url: 'user/info',
+                    params: this.queryForm,
+                }).then((res) => {
+                    this.userForm = res?.data?.rows
+
+                    setTimeout(() => {
+                        this.loading = false
+                    }, 80)
+                })
+            },
+            onSubmit() {
+                this.$refs.userForm.validate(valid => {
+                    if (valid) {
+                        this.onUpdate()
+                    }
+                })
+            },
+            onUpdate() {
+                app.request({
+                    method: 'put',
+                    url: 'user/update',
+                    data: this.userForm,
+                }).then(() => {
+                    this.refresh()
+
+                    this.$notify({
+                        title: 'Success',
+                        message: '修改成功',
+                        type: 'success',
+                        duration: 2000
+                    })
+                })
+            },
+            refresh() {
+                this.getUserInfo()
+            },
+            handleUpdate() {
+                this.$message({
+                    message: '正在开发中，敬请期待...',
+                    type: 'success'
+                })
+            }
+        }
+    })
+</script>

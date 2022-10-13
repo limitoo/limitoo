@@ -1,0 +1,57 @@
+{% extends "../layouts/blog-layouts.html" %}
+
+{% block title %}博客{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <div class="blog-main">
+        {% for vo in data.list %}
+            <div class="app-blog-item clearfix">
+                <div class="app-blog-title">
+                    <a href="/blog/{{ vo.Id }}" target="_blank" title="{{ vo.Title }}">{{ vo.Title }}</a>
+                </div>
+                <div class="app-blog-body">
+                    <div class="app-blog-content">{{ vo.Description | safe | slice:":150" }}</div>
+                </div>
+                <div class="blog-title-info">
+                    <div class="title-info-list space-between">
+                        <div class="assist">
+                            <div class="date"><i class="fa fa-calendar-o"></i><b>{{ vo.Createtime | slice:":10" }}</b></div>
+                            <i>/</i>
+                            <div class="comment"><i class="fa fa-comment-o"></i><b>0</b> 评论</div>
+                            <i>/</i>
+                            <div class="like"><i class="fa fa-thumbs-o-up"></i><b>{{ vo.Likes }}</b> 点赞</div>
+                            <i>/</i>
+                            <div class="views"><i class="fa fa-eye"></i><b>{{ vo.Views }}</b> 阅读</div>
+                        </div>
+                        <div class="category">
+                            <a title="{{ vo.ColTitle }}" href="/blog/category/{{ vo.Catid }}">
+                                <i class="fa fa-sitemap"></i><b>{{ vo.ColTitle }}</b>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="app-empty app-empty-normal">
+                <div class="app-empty-image">
+                    <svg class="app-empty-img-simple" width="64" height="41" viewBox="0 0 64 41" xmlns="http://www.w3.org/2000/svg">
+                        <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
+                            <ellipse class="app-empty-img-simple-ellipse" cx="32" cy="33" rx="32" ry="7"></ellipse>
+                            <g class="app-empty-img-simple-g" fill-rule="nonzero">
+                                <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                                <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" class="app-empty-img-simple-path"></path>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="app-empty-description">暂无数据</div>
+            </div>
+        {% endfor %}
+        <div class="app-web-page">
+            {{ data.page | safe  }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "../layouts/blog-layouts.html" %}
+
+{% block title %}归档{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <div class="blog-main">
+        {% for vo in data.list %}
+            <div class="app-blog-item">
+                <div class="app-blog-title">
+                    <a href="/blog/{{ vo.Id }}" target="_blank" title="{{ vo.Title }}">{{ vo.Title }}</a>
+                </div>
+                <div class="app-blog-body">
+                    <div class="app-blog-content">{{ vo.Content | safe }}</div>
+                </div>
+                <div class="blog-title-info">
+                    <div class="title-info-list clearfix">
+                        <a class="title-date" href="#">{{ vo.Ctime }}</a>
+                        <a class="title-sort" href="#">{{ vo.Likes }}</a>
+                        <a class="title-clicks" href="#">{{ vo.Likes }}</a>
+                        <a class="title-cmt" href="#">0 条评论</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <li>暂无数据</li>
+        {% endfor %}
+        <div class="app-web-page">
+            {{ data.page | safe  }}
+        </div>
+    </div>
+{% endblock %}

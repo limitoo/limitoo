@@ -1,0 +1,58 @@
+<!-- 头部区域 -->
+<div class="layui-header header">
+    <div class="layui-logo layuimini-logo"></div>
+    <div class="layuimini-header-content">
+        <a>
+            <div class="layuimini-tool"><i title="展开" class="fa fa-outdent" data-side-fold="1"></i></div>
+        </a>
+        <!--电脑端头部菜单-->
+        <ul class="layui-nav layui-layout-left layuimini-header-menu layuimini-menu-header-pc layuimini-pc-show"></ul>
+        <!--手机端头部菜单-->
+        <ul class="layui-nav layui-layout-left layuimini-header-menu layuimini-mobile-show">
+            <li class="layui-nav-item">
+                <a href="javascript:;"><i class="fa fa-list-ul"></i> 选择模块</a>
+                <dl class="layui-nav-child layuimini-menu-header-mobile"></dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item" lay-unselect>
+                <a href="javascript:;" data-home="主页"><i class="fa fa-home"></i></a>
+            </li>
+            <li class="layui-nav-item" lay-unselect>
+                <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
+            </li>
+            <li class="layui-nav-item" lay-unselect hidden>
+                <a href="javascript:;" data-clear="清理" class="layuimini-clear"><i class="fa fa-trash-o"></i></a>
+            </li>
+            <li class="layui-nav-item mobile layui-hide-xs" lay-unselect>
+                <a href="javascript:;" data-check-screen="full"><i class="fa fa-arrows-alt"></i></a>
+            </li>
+            <li class="layui-nav-item layuimini-setting">
+                <a href="javascript:;" id="js-top-username"></a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="javascript:;" layuimini-content-href="user" data-title="基本资料" data-icon="fa fa-gears">
+                            <i class="layui-icon layui-icon-username"></i> <span class="title">我的资料</span>
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="javascript:;" layuimini-content-href="user/password" data-title="修改密码" data-icon="fa fa-gears">
+                            <i class="fa fa-lock"></i> <span class="title">修改密码</span>
+                        </a>
+                    </dd>
+                    <dd>
+                        <hr>
+                    </dd>
+                    <dd>
+                        <a href="javascript:;" class="login-out">
+                            <i class="fa fa-external-link"></i> <span class="title">退出登录</span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layuimini-select-bgcolor" lay-unselect>
+                <a href="javascript:;" data-bgcolor="配色方案"><i class="fa fa-ellipsis-v"></i></a>
+            </li>
+        </ul>
+    </div>
+</div>

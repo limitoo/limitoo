@@ -1,0 +1,294 @@
+{% include "../common/_app_css.html" %}
+<title>新增文章 - 富文本 - 管理系统</title>
+<div id="app" class="app-edit-page">
+    <div class="layui-card">
+        <el-form ref="modelForm" :model="modelForm" :rules="rules" label-width="80px" style="width:95%; margin-left:20px;">
+            <el-row :gutter="40">
+                <el-col :span="18">
+                    <el-form-item label="标题" prop="title">
+                        <el-input v-model="modelForm.title" />
+                    </el-form-item>
+                    <el-form-item label="简介" prop="description">
+                        <el-input v-model="modelForm.description" type="textarea" :rows="2" placeholder="请输入简介" />
+                    </el-form-item>
+                    <el-form-item label="内容" prop="content">
+                        <app.tinymce :height="500" v-model.sync="modelForm.content"></app.tinymce>
+                    </el-form-item>
+                </el-col>
+
+                <el-col :span="6">
+                    <el-form-item label-width="0">
+                        {#<el-button @click="handleCancel">取消</el-button>#}
+                        <el-button size="medium" type="primary" @click="!id ? createData() : updateData()">发布</el-button>
+                        <el-tooltip class="item" effect="dark" content="切换Markdown编辑器">
+                            <el-button size="medium" @click="toMarkdown()"><i class="fa fa-exchange"></i></el-button>
+                        </el-tooltip>
+                    </el-form-item>
+
+                    <el-collapse v-model="activeCollapse">
+                        <el-collapse-item title="文章状态" name="1">
+                            <el-checkbox v-model="modelForm.status" :true-label="2" :false-label="1">保存草稿</el-checkbox>
+                        </el-collapse-item>
+
+                        <el-collapse-item title="文章类型" name="2">
+                            <el-form-item prop="catid" label-width="0">
+                                <el-select v-model="modelForm.catid" style="width:100%" placeholder="请选择类别">
+                                    <el-option v-for="item in categoryList" :key="item.colId" :label="item.colTitle" :value="item.colId"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-collapse-item>
+
+                    </el-collapse>
+
+                </el-col>
+
+            </el-row>
+
+        </el-form>
+    </div>
+</div>
+{% include "../common/_app_js.html" %}
+{% block importJs %}
+    <script src="/public/common/js/tinymce4.7.5/tinymce.min.js"></script>
+{% endblock %}
+{% include "../components/tinymce.html" %}
+{% include "../components/table-tool-bar.html" %}
+{% include "../components/pagination.html" %}
+<script>
+    var vm = app.vue({
+        el: '#app',
+        data() {
+            return {
+                id: '',
+                showSearch: true,
+                dialogStatus: '',
+                editVisible: false,
+                tableLoading: false,
+                // 查询参数
+                queryForm: {
+                    title: '',
+                    page: 1,
+                    limit: 10,
+                },
+                titleMap: {
+                    update: '修改',
+                    create: '新增'
+                },
+                modelForm: {
+                    author: 'admin',
+                    title: '',
+                    catid: '',
+                    content: '',
+                    status: 1,
+                },
+                rules: {
+                    title: [
+                        { required: true, message: '请输入标题名称', trigger: 'blur' },
+                        { min: 3, max: 100, message: '长度在 3 到 100 个字符', trigger: 'blur' }
+                    ],
+                    catid: [{ required: true, message: '请请选择类别', trigger: ['blur', 'change'] }],
+                    description: [{ required: true, message: '请输入内容', trigger: 'blur' }],
+                    content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
+                },
+                columns: [],
+                multipleSelection: [],
+                rowSelection: [],
+                tableData: [],
+                categoryList: [],
+                total: 0,
+                activeCollapse: ['1', '2'],
+            }
+        },
+        created() {
+            this.getUrlParams()
+            this.id && this.getDetail()
+            this.getList()
+            this.getCategoryList()
+        },
+        methods: {
+            getUrlParams() {
+                const params = app.getParams()
+                this.id = params?.id
+            },
+            addNew() {
+                // this.editVisible = true
+                // this.dialogStatus = 'create'
+                window.open('blog/edit')
+            },
+            getCategoryList() {
+                app.request({
+                    method: 'get',
+                    url: 'blog/category/list',
+                    params: this.queryForm,
+                }).then((res) => {
+                    const rows = res?.data?.rows
+
+                    if (rows?.length) {
+                        this.categoryList = rows.filter(item => item.colId !== 4)
+                    }
+                })
+            },
+            getDetail() {
+                app.request({
+                    method: 'get',
+                    url: `blog/${this.id}`,
+                }).then((res) => {
+                    this.modelForm = res?.data?.rows
+
+                    setTimeout(() => {
+                        this.tableLoading = false
+                    }, 80)
+                })
+            },
+            getList() {
+                this.tableLoading = true
+                app.request({
+                    method: 'get',
+                    url: 'blog/list',
+                    params: this.queryForm,
+                }).then((res) => {
+                    this.tableData = res?.data?.rows
+                    this.total = res?.data?.total
+
+                    setTimeout(() => {
+                        this.tableLoading = false
+                    }, 80)
+                })
+            },
+            onSearch: _.debounce(() => {
+                vm.queryForm.page = 1
+                vm.getList()
+            }, 500),
+            onReset: _.debounce(() => {
+                vm.queryForm = {}
+                vm.queryForm.page = 1
+                vm.getList()
+            }, 500),
+            async handleEdit(index, row) {
+                this.editVisible = true
+                this.dialogStatus = 'update'
+                this.modelForm = row
+                // this.modelForm.status = '1'
+            },
+            refreshData(msg = '操作') {
+                this.getList()
+                this.$notify({
+                    message: `${msg}成功`,
+                    type: 'success',
+                    duration: 3000
+                })
+            },
+            handleDelete(index, row) {
+                this.onDelete(row.id)
+            },
+            onBatchDelete() {
+                const ids = this.rowSelection.map(item => item.id)
+
+                if (!ids?.length) {
+                    this.$message.error('至少选择一项')
+                    return
+                }
+
+                this.$confirm('你确定要删除选中项吗?', '温馨提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.onDelete(ids)
+                })
+            },
+            onDelete(id) {
+                this.dialogStatus = 'delete'
+
+                app.request({
+                    method: 'post',
+                    url: 'blog/delete',
+                    data: app.stringify({ id })
+                }).then((res) => {
+                    !res?.code && this.refreshData()
+                })
+            },
+            handleStatusChange: _.debounce((v, row) => {
+                let text = row.status === 1 ? '保存草稿' : '发布'
+
+                vm.$confirm('确认要 『 ' + text + ' 』 吗？', '温馨提示', {
+                    type: 'warning'
+                }).then(() => {
+                    vm.onStatusChange(row)
+                })
+            }, 200),
+            onStatusChange(row) {
+                this.modelForm = app.deepClone(row)
+                this.modelForm.status = row.status === 1 ? 2 : 1
+                row.status = row.status === 1
+
+                this.onUpdate()
+            },
+            setFields() {
+                this.modelForm.md = this.input
+                this.modelForm.content = window.marked(this.input, { sanitize: true })
+            },
+            createData() {
+                this.$refs.modelForm.validate(valid => {
+                    if (valid) {
+                        app.request({
+                            method: 'post',
+                            url: 'blog/insert',
+                            data: this.modelForm,
+                        }).then(() => {
+                            this.editVisible = false
+                            this.handleClose()
+                            this.onSearch()
+
+                            this.$notify({
+                                title: 'Success',
+                                message: '新增成功',
+                                type: 'success',
+                                duration: 2000
+                            })
+                        })
+                    }
+                })
+            },
+            updateData() {
+                this.$refs.modelForm.validate(valid => {
+                    if (valid) {
+                        this.onUpdate()
+                    }
+                })
+            },
+            onUpdate() {
+                app.request({
+                    method: 'put',
+                    url: 'blog/update',
+                    data: this.modelForm,
+                }).then(() => {
+                    this.editVisible = false
+                    this.handleClose()
+                    this.onSearch()
+
+                    this.$notify({
+                        title: 'Success',
+                        message: '修改成功',
+                        type: 'success',
+                        duration: 2000
+                    })
+                })
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val
+            },
+            handleCancel() {
+                this.editVisible = false
+                this.handleClose()
+            },
+            handleClose(done) {
+                this.$refs.modelForm && this.$refs.modelForm.resetFields()
+                this.$set(this, 'modelForm', this.$options.data().modelForm)
+
+                done && done()
+            },
+            toMarkdown() {
+                window.open('/admin/blog/edit/md')
+            }
+        }
+    })
+</script>

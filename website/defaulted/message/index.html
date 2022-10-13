@@ -1,0 +1,89 @@
+{% extends "../layouts/master.html" %}
+
+{% block title %}留言板{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="/public/home/css/home.css" />
+{% endblock %}
+
+{% block content %}
+    <div class="app-message">
+        <div class="app-message-title">
+            <h1>留言板</h1>
+        </div>
+        <div class="blog-comment design-comment">
+            <div class="blog-tips-info"></div>
+            <form id="form1" name="form1">
+                <div class="comment-info-main clearfix">
+                    <div class="comment-head">
+                        <div class="comment-headimg">
+                            <img class="avatar" width="50" height="50" src="/public/uploads/visitor.png" id="gravatarView" alt="头像" />
+                            {#<input type="hidden" name="headimg" id="gravatarInput" />#}
+                        </div>
+                    </div>
+                    <div class="comment-userinfo">
+                        <ul class="comment-wrap">
+                            <li>
+                                <input class="input-text" type="text" value="" placeholder="您的昵称" size="70" autocomplete="off" name="username" id="author" />
+                                <i class="require-red">*</i>
+                            </li>
+                            <li>
+                                <input class="input-text" type="text" value="" placeholder="您的邮箱" size="70" name="email" id="email" />
+                                <i class="require-red">*</i> <i class="input-after">
+                                    <a href="/blog/102" target="_blank">了解Gravatar</a>
+                                </i>
+                            </li>
+                            <li>
+                                <input class="input-text" type="text" value="" placeholder="您的主页" size="70" name="url" id="url" />
+                            </li>
+                            <li>
+                                <textarea class="common-text blog-text" placeholder="您的评论内容" name="content" id="content" cols="30" rows="10"></textarea>
+                                <i class="require-red">*</i>
+                            </li>
+                            <li>
+                                <input class="input-text input-code" maxlength="4" placeholder="验 证 码" autocomplete="off" type="text" name="verify" size="4" id="verify" />
+                                <img id="verifyImg" class="cp verify-img" src="/verify" alt="点击刷新验证码" title="点击刷新验证码" />
+                            </li>
+                            <li>
+                                <input type="hidden" name="captchaId" value="" id="captchaId" />
+                                {#<input type="hidden" name="bid" value="" id="nid" />#}
+                                {#<input type="hidden" name="module" value="design" />#}
+                                <span class="comment-btn"><input class="btn blog-btn" id="sendMsg" type="submit" value="发表" /></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--/comment-->
+        <div class="comment-list-wrap">
+            <ul class="comment-list">
+                {% for vo in data.list %}
+                    <li>
+                        <div class="comment-headimg">
+                            <a href="{{ vo.Url }}" title="{{ vo.Username }}" target="_blank">
+                                <img class="avatar" width="44" height="44" src="https://v1.alapi.cn/api/avatar?email={{ vo.Email }}&size=100" alt="Daxun">
+                            </a>
+                        </div>
+                        <div class="comment-main">
+                            <div class="comment-name clearfix">
+                                <div class="comment-user">
+                                    <h1>{{ vo.Username }}</h1>
+                                </div>
+                                <div class="comment-revert">
+                                    <time class="comment-date">{{ vo.Createtime }}</time>
+                                </div>
+                            </div>
+                            <div class="comment-content">{{ vo.Content | safe | escape }}</div>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li>暂无数据</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block importJs %}
+{% endblock %}

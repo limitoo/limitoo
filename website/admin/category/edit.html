@@ -1,0 +1,24 @@
+<el-dialog width="600" :title="titleMap[dialogStatus]" :visible.sync="editVisible" :before-close="handleClose">
+    <el-form ref="modelForm" :model="modelForm" label-width="70px" style="width:83%; margin-left:50px;">
+        <input type="hidden" name="modelid" v-model="modelForm.modelid">
+        <input type="hidden" name="model" v-model="modelForm.model">
+        <el-form-item label="上级分类" prop="colPid">
+            <el-select v-model="modelForm.colPid" disabled placeholder="请选择父类别">
+                <el-option label="博客" value="4"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="名称" prop="colTitle">
+            <el-input v-model="modelForm.colTitle" />
+        </el-form-item>
+        <el-form-item label="排序" prop="ord">
+            <el-input v-model="modelForm.ord" />
+        </el-form-item>
+        <el-form-item label="简介" prop="description">
+            <el-input v-model="modelForm.description" type="textarea" :rows="5" placeholder="请输入内容" />
+        </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">确认</el-button>
+    </div>
+</el-dialog>

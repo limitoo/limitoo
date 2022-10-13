@@ -1,0 +1,19 @@
+<header id="header" class="wrap-box">
+    <div class="site-name">
+        <a id="logo" href="/."> {{ data.site.Title }} </a>
+        {% if data.site.Title %}
+            <p class="description" title="由时佬友情提供">{{ data.site.Slogon }}</p>
+        {% endif %}
+    </div>
+    <div id="nav-menu" class="header-nav">
+        <a class="item {% if data.active == "index" %}current{% endif %}" href="/"><i class="fa fa-home"></i>首页</a>
+        <a class="item {% if data.active == "blog" %}current{% endif %}" href="/blog"><i class="fa fa-navicon"></i>文章</a>
+        <a class="item {% if data.active == "tags" %}current{% endif %}" href="/tags" hidden><i class="fa fa-tag"></i>标签</a>
+        <a class="item {% if data.active == "message" %}current{% endif %}" href="/message"><i class="fa fa-comments"></i>留言板</a>
+        <a class="item {% if data.active == "about" %}current{% endif %}" href="/about"><i class="fa fa-user"></i>关于我</a>
+    </div>
+    <form class="app-header-search none" style="display:none;" method="get" action="/search">
+        <input autocomplete="off" value="" placeholder="请输入关键字..." name="keywords" class="input" type="text" />
+        <button type="submit" class="app-search-submit"><span class="search-icon"><i class="fa fa-search"></i></span></button>
+    </form>
+</header>

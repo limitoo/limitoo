@@ -1,0 +1,21 @@
+<el-dialog width="40%" top="100" :title="titleMap[dialogStatus]" :visible.sync="editVisible" :before-close="handleClose">
+    <el-form ref="modelForm" :model="modelForm" label-width="70px" style="width:83%; margin-left:50px;">
+        <input type="hidden" name="id" v-model="modelForm.id">
+        <el-form-item label="站名" prop="title">
+            <el-input v-model="modelForm.title" />
+        </el-form-item>
+        <el-form-item label="网址" prop="url">
+            <el-input v-model="modelForm.url" />
+        </el-form-item>
+        <el-form-item label="联系人" prop="contact">
+            <el-input v-model="modelForm.contact" />
+        </el-form-item>
+        <el-form-item label="备注" prop="introduce">
+            <el-input v-model="modelForm.introduce" />
+        </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData() ">确认</el-button>
+    </div>
+</el-dialog>

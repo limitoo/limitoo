@@ -1,0 +1,20 @@
+<el-dialog width="80%" :title="titleMap[dialogStatus]" top="25" :visible.sync="editVisible" :before-close="handleClose">
+    <el-form ref="modelForm" :model="modelForm" :rules="rules" label-width="80px" style="width:89%; margin-left:50px;">
+        <el-form-item label="评论人" prop="username">
+            <el-input v-model="modelForm.username" disabled />
+        </el-form-item>
+        <el-form-item label="评论内容" prop="content">
+            <el-input v-model="modelForm.content" disabled />
+        </el-form-item>
+        <el-form-item label="回复" prop="reply">
+            <app.tinymce :height="360" v-model.sync="modelForm.reply"></app.tinymce>
+        </el-form-item>
+        <input type="hidden" name="pid" v-model="modelForm.id" />
+        <input type="hidden" name="nid" v-model="modelForm.nid" />
+        <input type="hidden" name="module" v-model="modelForm.module" />
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="createData()">确认</el-button>
+    </div>
+</el-dialog>

@@ -1,0 +1,241 @@
+{% extends "../layouts/default.html" %}
+
+{% block title %}新增文章 - Markdown{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/public/common/css/github-markdown-css/5.1.0/github-markdown.css"/>
+    <style>
+        body{
+            background-color:#fff;
+        }
+        #editor{
+            margin:0;
+            height:100%;
+            font-family:"Helvetica Neue", Arial, sans-serif;
+            color:#333;
+        }
+        .app-md-markarea, .editor-container{
+            display:inline-block;
+            width:calc(50% - 3px);
+            height:100%;
+            vertical-align:top;
+            box-sizing:border-box;
+            padding:0 20px;
+        }
+        .app-md-markarea{
+            border:none;
+            border-right:1px solid #ccc;
+            resize:none;
+            outline:none;
+            background-color:#f6f6f6;
+            font-size:14px;
+            font-family:"Monaco", courier, monospace;
+            padding:20px;
+            min-height:calc(100vh - 65px);
+        }
+        .app-md-form code{
+            color:#f66;
+        }
+        #editor div.editor-container{
+            height:calc(100vh - 65px);
+            overflow-y:auto;
+        }
+        .app-md-form ::-webkit-scrollbar{
+            display:block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="app">
+        <el-form ref="modelForm" class="app-md-form" :model="modelForm" :rules="rules">
+            <div class="app-md-header">
+                <div class="app-md-title">
+                    <el-form-item prop="title">
+                        <el-input v-model="modelForm.title" maxlength="100" autocomplete="off" placeholder="请输入标题，您可以输入100个字" class="title-input" />
+                    </el-form-item>
+                </div>
+                <div class="app-md-action">
+                    <el-button size="medium" @click="toggleDrawer()">设置</el-button>
+                    <el-button size="medium" type="primary" @click="!id ? createData() : updateData()">发布</el-button>
+                    <el-tooltip class="item" effect="dark" content="切换富文本编辑器">
+                        <el-button size="medium" @click="toEditor()"><i class="fa fa-exchange"></i></el-button>
+                    </el-tooltip>
+                </div>
+            </div>
+            <div id="editor" class="app-md-editor markdown-body">
+                <textarea :value="input" class="app-md-markarea" @input="update"></textarea>
+                <div class="editor-container" v-html="compiledMarkdown"></div>
+            </div>
+            <keep-alive>
+                <el-drawer title="设置" :visible.sync="drawer">
+                    <div class="app-md-drawer">
+                        <el-collapse v-model="activeCollapse">
+                            <el-collapse-item title="文章状态" name="1">
+                                <el-checkbox v-model="modelForm.status" :true-label="2" :false-label="1">保存草稿</el-checkbox>
+                            </el-collapse-item>
+
+                            <el-collapse-item title="文章类型" name="2">
+                                <el-form-item prop="catid">
+                                    <el-select v-model="modelForm.catid" style="width:100%" placeholder="请选择文章分类">
+                                        <el-option v-for="item in categoryList" :key="item.colId" :label="item.colTitle" :value="item.colId"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-collapse-item>
+
+                            <el-collapse-item title="摘要" name="3">
+                                <el-form-item prop="description" label-width="0">
+                                    <el-input v-model="modelForm.description" type="textarea" placeholder="请选择摘要" maxlength="300" :rows="5" show-word-limt autosize />
+                                </el-form-item>
+                            </el-collapse-item>
+
+                        </el-collapse>
+                    </div>
+                </el-drawer>
+            </keep-alive>
+        </el-form>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="/public/common/js/marked/0.3.6/marked.js"></script>
+    <script>
+        var vm = app.vue({
+            el: '#app',
+            data() {
+                return {
+                    id: '',
+                    drawer: true,
+                    input: '',
+                    modelForm: {
+                        author: 'admin',
+                        title: '',
+                        md: '',
+                        content: '',
+                        catid: '',
+                        status: 1,
+                    },
+                    rules: {
+                        title: [
+                            { required: true, message: '请输入标题名称', trigger: 'blur' },
+                            { min: 3, max: 100, message: '长度在 3 到 100 个字符', trigger: 'blur' }
+                        ],
+                        catid: [{ required: true, message: '请请选择类别', trigger: ['blur', 'change'] }],
+                        description: [{ required: true, message: '请输入摘要', trigger: 'blur' }],
+                        content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
+                    },
+                    categoryList: [],
+                    activeCollapse: ['1', '2', '3'],
+                }
+            },
+            computed: {
+                compiledMarkdown() {
+                    return marked(this.input, { sanitize: true })
+                }
+            },
+            created() {
+                this.getUrlParams()
+                this.id && this.getDetail()
+                this.getCategoryList()
+            },
+            methods: {
+                getUrlParams() {
+                    const params = app.getParams()
+                    this.id = params?.id
+                },
+                getDetail() {
+                    app.request({
+                        method: 'get',
+                        url: `blog/${this.id}`,
+                    }).then((res) => {
+                        this.modelForm = res?.data?.rows
+                        this.input = this.modelForm.md
+                        setTimeout(() => {
+                            this.tableLoading = false
+                        }, 80)
+                    })
+                },
+                // 获取文章分类
+                getCategoryList() {
+                    app.request({
+                        method: 'get',
+                        url: 'blog/category/list',
+                        params: this.queryForm,
+                    }).then((res) => {
+                        const rows = res?.data?.rows
+
+                        if (rows?.length) {
+                            this.categoryList = rows.filter(item => item.colId !== 4)
+                        }
+                    })
+                },
+                update: _.debounce(function (e) {
+                    this.input = e.target.value
+                }, 300),
+                setFields() {
+                    this.modelForm.md = this.input
+                    this.modelForm.content = window.marked(this.input, { sanitize: true })
+                },
+                // 保存
+                createData() {
+                    this.setFields()
+
+                    this.$refs.modelForm.validate(valid => {
+                        if (valid) {
+                            app.request({
+                                method: 'post',
+                                url: 'blog/insert',
+                                data: this.modelForm,
+                            }).then(() => {
+                                this.handleClose()
+
+                                this.$notify({
+                                    title: 'Success',
+                                    message: '新增成功',
+                                    type: 'success',
+                                    duration: 2000
+                                })
+                            })
+                        }
+                    })
+                },
+                updateData() {
+                    this.$refs.modelForm.validate(valid => {
+                        if (valid) {
+                            this.onUpdate()
+                        }
+                    })
+                },
+                onUpdate() {
+                    app.request({
+                        method: 'put',
+                        url: 'blog/update',
+                        data: this.modelForm,
+                    }).then(() => {
+                        this.editVisible = false
+                        this.handleClose()
+
+                        this.$notify({
+                            title: 'Success',
+                            message: '修改成功',
+                            type: 'success',
+                            duration: 2000
+                        })
+                    })
+                },
+                toggleDrawer() {
+                    this.drawer = !this.drawer
+                },
+                toEditor() {
+                    window.open('/admin/blog/edit')
+                },
+                handleClose(done) {
+                    this.$refs.modelForm && this.$refs.modelForm.resetFields()
+                    this.$set(this, 'modelForm', this.$options.data().modelForm)
+                    this.input = ''
+
+                    done && done()
+                },
+            }
+        })
+    </script>
+{% endblock %}

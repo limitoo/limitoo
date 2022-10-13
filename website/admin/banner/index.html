@@ -1,0 +1,260 @@
+{% include "../common/_app_css.html" %}
+<div class="layui-fluid" id="app">
+    <div class="layui-card">
+        <transition enter-active-class="animated fadeInUp" leave-active-class="animated fadeOut">
+            <div class="layui-form layui-card-header" v-show="showSearch">
+                <el-form :inline="true" :model="queryForm" class="demo-form-inline" @submit.native.prevent>
+                    <el-form-item label="名称">
+                        <el-input v-model="queryForm.title" class="app-query-input" size="small" placeholder="请输入名称" @keyup.enter.native="onSearch"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" size="small" icon="el-icon-search" @click="onSearch">查询</el-button>
+                        <el-button size="small" icon="el-icon-refresh-left" @click="onReset">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </transition>
+        <div class="layui-card-body">
+            <div class="app-table-action">
+                <div class="app-table-btn">
+                    <el-button size="small" type="primary" icon="el-icon-plus" @click="addNew">新增</el-button>
+                    {#<el-button size="small" type="danger" plain icon="el-icon-delete" @click="onBatchDelete">删除</el-button>#}
+                </div>
+                <div class="app-table-action-right">
+                    <app.table-tool-bar :show-search.sync="showSearch" @query-table="getList" :columns="columns"></app.table-tool-bar>
+                </div>
+            </div>
+            <div class="app-table-container">
+                <el-table :data="tableData" stripe style="width: 100%" v-loading="tableLoading" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" label="序号" width="65"></el-table-column>
+                    <el-table-column prop="title" label="标题"></el-table-column>
+                    <el-table-column prop="smallimg" label="图片">
+                        <template slot-scope="scope">
+                            <el-popover placement="left-start" width="700" trigger="hover">
+                                <img style="width:100%" :src="scope.row.smallimg" alt="" />
+                                <img class="app-tab-banner" slot="reference" :src="scope.row.smallimg" alt="" />
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="update_time" label="更新时间" width="180"></el-table-column>
+                    <el-table-column label="操作" width="200">
+                        <template slot-scope="scope">
+                            <el-button size="mini" class="app-edit-btn" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+                            <el-button size="mini" class="app-del-btn" type="text" icon="el-icon-delete" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                    <template slot="empty" style="height: 100px;">
+                        <el-empty description="暂无数据"></el-empty>
+                    </template>
+                </el-table>
+            </div>
+            <div class="app-table-page">
+                <div class="app-table-page-info"></div>
+                <app.pagination v-show="total > 0" :total="total" :page.sync="queryForm.page" :limit.sync="queryForm.limit" @pagination="getList" />
+            </div>
+
+            {% include "./edit.html" %}
+
+        </div>
+    </div>
+</div>
+{% include "../common/_app_js.html" %}
+{% block importJs %}
+    <script src="/public/common/js/tinymce4.7.5/tinymce.min.js"></script>
+{% endblock %}
+{% include "../components/tinymce.html" %}
+{% include "../components/table-tool-bar.html" %}
+{% include "../components/pagination.html" %}
+<script>
+    var vm = app.vue({
+        el: '#app',
+        data() {
+            return {
+                showSearch: true,
+                dialogStatus: '',
+                editVisible: false,
+                tableLoading: false,
+                // 查询参数
+                queryForm: {
+                    title: '',
+                    page: 1,
+                    limit: 10,
+                },
+                titleMap: {
+                    update: '修改',
+                    create: '新增'
+                },
+                modelForm: {
+                    modelId: 1,
+                    title: '',
+                    content_html: '',
+                    is_show: true,
+                    type_id: '',
+                },
+                dialogImageUrl: '',
+                dialogVisible: false,
+                columns: [],
+                multipleSelection: [],
+                tableData: [],
+                categoryList: [],
+                total: 0,
+            }
+        },
+        created() {
+            this.getList()
+        },
+        methods: {
+            addNew() {
+                this.editVisible = true
+                this.dialogStatus = 'create'
+            },
+            getList() {
+                this.tableLoading = true
+                app.request({
+                    method: 'get',
+                    url: 'banner/list',
+                    params: this.queryForm,
+                }).then((res) => {
+                    this.tableData = res?.data?.rows
+                    this.total = res?.data?.total
+
+                    setTimeout(() => {
+                        this.tableLoading = false
+                    }, 80)
+                })
+            },
+            onSearch: _.debounce(() => {
+                vm.queryForm.page = 1
+                vm.getList()
+            }, 500),
+            onReset: _.debounce(() => {
+                vm.queryForm = {}
+                vm.queryForm.page = 1
+                vm.getList()
+            }, 500),
+            async handleEdit(index, row) {
+                // const res = await app.request({
+                //     method: 'get',
+                //     url: '/admin/blog/detail',
+                //     params: { user_id: row.id },
+                // })
+
+                this.editVisible = true
+                this.dialogStatus = 'update'
+                this.modelForm = row
+            },
+            refreshData(msg = '操作') {
+                this.getList()
+                this.$notify({
+                    message: `${msg}成功`,
+                    type: 'success',
+                    duration: 3000
+                })
+            },
+            handleDelete(index, row) {
+                this.onDelete(row.id)
+            },
+            onBatchDelete() {
+                const ids = this.rowSelection.map(item => item.id)
+
+                if (!ids?.length) {
+                    this.$message.error('至少选择一项')
+                    return
+                }
+
+                this.$confirm('你确定要删除选中项吗?', '温馨提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.onDelete(ids)
+                })
+            },
+            onDelete(id) {
+                this.dialogStatus = 'delete'
+
+                app.request({
+                    method: 'post',
+                    url: 'banner/delete',
+                    data: app.stringify({ id })
+                }).then((res) => {
+                    !res?.code && this.refreshData()
+                })
+            },
+            createData() {
+                this.$refs.modelForm.validate(valid => {
+                    if (valid) {
+                        app.request({
+                            method: 'post',
+                            url: 'banner/insert',
+                            data: this.modelForm,
+                        }).then(() => {
+                            this.editVisible = false
+                            this.handleClose()
+                            this.onSearch()
+
+                            this.$notify({
+                                title: 'Success',
+                                message: '新增成功',
+                                type: 'success',
+                                duration: 2000
+                            })
+                        })
+                    }
+                })
+            },
+            updateData() {
+                this.$refs.modelForm.validate(valid => {
+                    if (valid) {
+                        app.request({
+                            method: 'put',
+                            url: 'banner/update',
+                            data: this.modelForm,
+                        }).then(() => {
+                            this.editVisible = false
+                            this.handleClose()
+                            this.onSearch()
+
+                            this.$notify({
+                                title: 'Success',
+                                message: '修改成功',
+                                type: 'success',
+                                duration: 2000
+                            })
+                        })
+                    }
+                })
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val
+                console.log(this.multipleSelection)
+            },
+            handleRemove (file, fileList) {
+            },
+            handleUploadSuccess (response, file, fileList) {
+                if (response && response.data) {
+                    this.modelForm.smallimg = '/' + response.data.path
+                }
+            },
+            handleImgPreview (file) {
+                // this.dialogImageUrl = `/${this.modelForm.smallimg.replace('public', '')}`
+                this.dialogVisible = true
+            },
+            clearUploadFiles () {
+                this.$refs.upload.clearFiles()
+            },
+            handleDelImg () {
+                this.modelForm.smallimg = ''
+            },
+            handleCancel() {
+                this.editVisible = false
+                this.handleClose()
+            },
+            handleClose(done) {
+                this.$refs.modelForm && this.$refs.modelForm.resetFields()
+                this.$set(this, 'modelForm', this.$options.data().modelForm)
+                this.clearUploadFiles()
+                done && done()
+            },
+        }
+    })
+</script>

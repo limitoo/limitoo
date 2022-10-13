@@ -1,0 +1,32 @@
+{% extends "../layouts/default-layouts.html" %}
+
+{% block title %}关于我{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <section class="app-about home-container wrap-box animated showInUp">
+        <div class="home-container-inner">
+            <div class="about-content">
+                <div class="app-message-title">
+                    <h1>关于我</h1>
+                </div>
+                <div class="about-me about-items clearfix">
+                    <div class="me-img"><img src="/public/home/images/aboutme/about-me.jpg" alt=""></div>
+                    <div class="me-info">
+                        <p>大家好，我是一个在迷茫中摸索前行的赶路人。</p>
+                        <p>前端：Golang + Gin + Gorm + Pongo2 + Jquery</p>
+                        <p>后台管理：Vue + Axios + ElementUI</p>
+                        <p>服务端：Golang + Gin + Gorm + Pongo2 + Mysql + Logrus</p>
+                        <p>本人还是一个菜鸟，希望在学习Go的路上越走越远！</p>
+                        <p>
+                            <strong>仓库地址：</strong>
+                            <a href="https://limitoo" target="_blank">https://limitoo</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

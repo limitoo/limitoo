@@ -1,0 +1,250 @@
+{% include "../common/_app_css.html" %}
+<div class="layui-fluid" id="app">
+    <div class="layui-card">
+        <transition enter-active-class="animated fadeInUp" leave-active-class="animated fadeOut">
+            <div class="layui-form layui-card-header" v-show="showSearch">
+                <el-form :inline="true" :model="queryForm" class="demo-form-inline" @submit.native.prevent>
+                    <el-form-item label="名称">
+                        <el-input v-model="queryForm.title" class="app-query-input" size="small" placeholder="请输入名称" @keyup.enter.native="onSearch"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" size="small" icon="el-icon-search" @click="onSearch">查询</el-button>
+                        <el-button size="small" icon="el-icon-refresh-left" @click="onReset">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </transition>
+        <div class="layui-card-body">
+            <div class="app-table-action">
+                <div class="app-table-btn">
+                    <el-button size="small" type="primary" icon="el-icon-plus" @click="addNew">新增</el-button>
+                    {#<el-button size="small" type="danger" plain icon="el-icon-delete" @click="onBatchDelete">删除</el-button>#}
+                </div>
+                <div class="app-table-action-right">
+                    <app.table-tool-bar :show-search.sync="showSearch" @query-table="getList"></app.table-tool-bar>
+                </div>
+            </div>
+            <div class="app-table-container">
+                <el-table :data="tableData" style="width: 100%" v-loading="tableLoading" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="ord" label="排序" width="180"></el-table-column>
+                    <el-table-column prop="colId" label="序号" width="180"></el-table-column>
+                    <el-table-column prop="colTitle" label="名称"></el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <el-button size="mini" class="app-edit-btn" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+                            <el-button size="mini" class="app-del-btn" type="text" icon="el-icon-delete" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                    <template slot="empty" style="height: 100px;">
+                        <el-empty description="暂无数据"></el-empty>
+                    </template>
+                </el-table>
+            </div>
+
+            {% include "./edit.html" %}
+
+        </div>
+    </div>
+</div>
+{% include "../common/_app_js.html" %}
+{% block importJs %}
+    <script src="/public/common/js/tinymce4.7.5/tinymce.min.js"></script>
+{% endblock %}
+{% include "../components/tinymce.html" %}
+{% include "../components/table-tool-bar.html" %}
+{% include "../components/pagination.html" %}
+<script>
+    var vm = app.vue({
+        el: '#app',
+        data() {
+            return {
+                showSearch: true,
+                dialogStatus: '',
+                editVisible: false,
+                tableLoading: false,
+                currentPage4: 1,
+                queryForm: {
+                    title: '',
+                },
+                titleMap: {
+                    update: '修改',
+                    create: '新增',
+                    delete: '删除',
+                },
+                modelForm: {
+                    colPid: '4',
+                    modelid: '4',
+                    ord: 0,
+                    content_html: '',
+                },
+                rowSelection: [],
+                tableData: [],
+                modelRules: {
+                    title: [
+                        {
+                            required: true,
+                            message: '请输入名称',
+                            trigger: 'blur'
+                        },
+                        {
+                            min: 1,
+                            max: 100,
+                            message: '长度在 3 到 100 个字符',
+                            trigger: 'blur'
+                        }
+                    ],
+                    description: [{
+                        required: true,
+                        message: '请输入描述',
+                        trigger: 'blur'
+                    }]
+                },
+                categoryList: [],
+                total: 0,
+            }
+        },
+        created() {
+            this.getList()
+        },
+        methods: {
+            toggleQuery() {
+                this.showSearch = !this.showSearch
+            },
+            addNew() {
+                this.editVisible = true
+                this.dialogStatus = 'create'
+                // this.modelForm = {
+                //     parent_id: 0,
+                // }
+            },
+            getList() {
+                this.tableLoading = true
+                app.request({
+                    method: 'get',
+                    url: 'category/list',
+                    params: this.queryForm,
+                }).then((res) => {
+                    if (!res?.data?.rows?.length) { return }
+
+                    this.tableData = res?.data?.rows.filter(item => item.colId !== 4)
+                    this.total = res?.data?.total
+
+                    setTimeout(() => {
+                        this.tableLoading = false
+                    }, 100)
+                })
+            },
+            onSearch: _.debounce(() => {
+                vm.getList()
+            }, 500),
+            onReset: _.debounce(() => {
+                vm.queryForm = {}
+                vm.getList()
+            }, 500),
+            async handleEdit(index, row) {
+                this.editVisible = true
+                this.dialogStatus = 'update'
+                this.modelForm = row
+            },
+            refreshData(msg = '操作') {
+                this.getList()
+                this.$notify({
+                    message: `${msg}成功`,
+                    type: 'success',
+                    duration: 3000
+                })
+            },
+            handleDelete(index, row) {
+                this.onDelete(row.colId)
+            },
+            onBatchDelete() {
+                const ids = this.rowSelection.map(item => item.id)
+
+                if (!ids?.length) {
+                    this.$message.error('至少选择一项')
+                    return
+                }
+
+                this.$confirm('你确定要删除选中项吗?', '温馨提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.onDelete(ids)
+                })
+            },
+            onDelete(id) {
+                this.dialogStatus = 'delete'
+
+                app.request({
+                    method: 'post',
+                    url: 'category/delete',
+                    data: app.stringify({ id })
+                }).then((res) => {
+                    !res?.code && this.refreshData()
+                })
+            },
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`)
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`)
+            },
+            createData() {
+                this.$refs.modelForm.validate(valid => {
+                    if (valid) {
+                        app.request({
+                            method: 'post',
+                            url: 'category/insert',
+                            data: this.modelForm,
+                        }).then(() => {
+                            this.editVisible = false
+                            this.handleClose()
+                            this.onSearch()
+
+                            this.$notify({
+                                title: 'Success',
+                                message: '新增成功',
+                                type: 'success',
+                                duration: 2000
+                            })
+                        })
+                    }
+                })
+            },
+            updateData() {
+                this.$refs.modelForm.validate(valid => {
+                    if (valid) {
+                        app.request({
+                            method: 'put',
+                            url: 'category/update',
+                            data: this.modelForm,
+                        }).then(() => {
+                            this.editVisible = false
+                            this.handleClose()
+                            this.onSearch()
+
+                            this.$notify({
+                                title: 'Success',
+                                message: '修改成功',
+                                type: 'success',
+                                duration: 2000
+                            })
+                        })
+                    }
+                })
+            },
+            handleSelectionChange(val) {
+                this.rowSelection = val
+            },
+            handleCancel() {
+                this.editVisible = false
+                this.handleClose()
+            },
+            handleClose(done) {
+                this.$refs.modelForm && this.$refs.modelForm.resetFields()
+                this.$set(this, 'modelForm', this.$options.data().modelForm)
+                done && done()
+            },
+        }
+    })
+</script>

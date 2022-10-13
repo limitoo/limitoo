@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>{% block title %}{% endblock %} - {{ data.site.Title }}</title>
+    {% include "../common/_app_meta.html" %}
+    {% include "../common/_app_css.html" %}
+    {% block head %}{% endblock %}
+    {% block importCss %}{% endblock %}
+    {% block style %}{% endblock %}
+    <script>
+        if (top.location !== self.location) {
+            top.location = self.location
+        }
+    </script>
+</head>
+<body>
+{% include "_header.html" %}
+{% block header %}{% endblock %}
+<section class="app-container animated showInUp">
+    <div class="app-container-inner wrap-box">
+        <div class="app-content">
+            {% block content %}{% endblock %}
+        </div>
+        {% include "../common/_blog_sider.html" %}
+    </div>
+</section>
+{% include "_footer.html" %}
+{% block footer %}{% endblock %}
+{% block importJs %}{% endblock %}
+{% block script %}{% endblock %}
+</body>
+</html>

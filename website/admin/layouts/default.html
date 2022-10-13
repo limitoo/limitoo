@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>{% block title %}{% endblock %} - 管理系统</title>
+    {% include "../common/_app_css.html" %}
+    {% block head %}{% endblock %}
+    {% block importCss %}{% endblock %}
+    {% block style %}{% endblock %}
+</head>
+<body>
+{% block header %}{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}
+{% include "../common/_app_js.html" %}
+{% block script %}{% endblock %}
+</body>
+</html>

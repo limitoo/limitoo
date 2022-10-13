@@ -1,0 +1,115 @@
+{% include "../common/_app_css.html" %}
+<div class="layui-fluid" id="app">
+    <el-row>
+        <el-col :span="12" class="card-box">
+            <el-card>
+                <div slot="header"><span>CPU</span></div>
+                <div class="el-table el-table--enable-row-hover el-table--medium">
+                    <table cellspacing="0" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="el-table__cell is-leaf"><div class="cell">属性</div></th>
+                                <th class="el-table__cell is-leaf"><div class="cell">值</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">CPU使用率</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.cpu }}</div></td>
+                            </tr>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">内存使用率</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.mem.UsedPercent }}%</div></td>
+                            </tr>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">硬盘使用率</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.disk }}%</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </el-card>
+        </el-col>
+
+        <el-col :span="12" class="card-box">
+            <el-card>
+                <div slot="header"><span>内存</span></div>
+                <div class="el-table el-table--enable-row-hover el-table--medium">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="el-table__cell is-leaf"><div class="cell">属性</div></th>
+                                <th class="el-table__cell is-leaf"><div class="cell">内存</div></th>
+                                <th class="el-table__cell is-leaf"><div class="cell">JVM</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">总内存</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.mem.Total }}G</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ server.jvm.total }}M</div></td>
+                            </tr>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">已用内存</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.mem.UsedPercent}}G</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ server.jvm.used}}M</div></td>
+                            </tr>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">剩余内存</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.mem.Free }}G</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ server.jvm.free }}M</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </el-card>
+        </el-col>
+
+        <el-col :span="24" class="card-box">
+            <el-card>
+                <div slot="header">
+                    <span>服务器信息</span>
+                </div>
+                <div class="el-table el-table--enable-row-hover el-table--medium">
+                    <table cellspacing="0" style="width: 100%;">
+                        <tbody>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">服务器名称</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.sys.Hostname }}</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">操作系统</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.sys.OS }}</div></td>
+                            </tr>
+                            <tr>
+                                <td class="el-table__cell is-leaf"><div class="cell">服务器IP</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.sys.BootTime }}</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">系统架构</div></td>
+                                <td class="el-table__cell is-leaf"><div class="cell">{{ data.sys.Platform }}</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </el-card>
+        </el-col>
+
+    </el-row>
+</div>
+{% include "../common/_app_js.html" %}
+<script>
+    var vm = app.vue({
+        el: '#app',
+        data() {
+            return {
+                loading: false,
+                modelForm: {
+                },
+            }
+        },
+        created() {
+            this.getList()
+        },
+        methods: {
+            getList() {
+            },
+        }
+    })
+</script>

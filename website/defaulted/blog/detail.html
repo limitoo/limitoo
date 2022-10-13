@@ -1,0 +1,178 @@
+{% extends "../layouts/master.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <div class="app-blog-detail">
+        <div class="app-detail-title">
+            <h1>{{ data.blog.Title }}</h1>
+        </div>
+        <div class="app-detail-overview">
+            <div class="info">
+                <div class="avatar">
+                    <img src="https://pica.zhimg.com/691df473a_is.jpg?source=32738c0c" alt="">
+                </div>
+                <div class="statis">
+                    <div class="author">管理员</div>
+                    <div class="assist">
+                        <div class="comment"><i class="fa fa-comment-o"></i>1 评论</div>
+                        <i>/</i>
+                        <div class="like"><i class="fa fa-thumbs-o-up"></i><b>{{ data.blog.Likes }}</b> 点赞</div>
+                        <i>/</i>
+                        <div class="views"><i class="fa fa-eye"></i><b>{{ data.blog.Views }}</b> 阅读</div>
+                        <i>/</i>
+                        <div class="words"><i class="fa fa-file-word-o"></i>{{ data.blog.Content | length }} 字</div>
+                    </div>
+                </div>
+            </div>
+            <div class="date">
+                <b>{{ data.blog.Createtime | slice:"8:10" }}</b>
+                <i>{{ data.blog.Createtime | slice:":7" }}</i>
+            </div>
+        </div>
+        <div class="app-detail-body">
+            <div class="app-blog-content">{{ data.blog.Content | safe }}</div>
+        </div>
+        <div class="app-detail-copyright">
+            <div class="copyright">
+                <div class="item">
+                    <i class="fa fa-user"></i>
+                    <span>转载请注明来源：</span> <span class="text">杰克</span>
+                </div>
+                <div class="item">
+                    <i class="fa fa-link"></i>
+                    <span>本文链接：</span>
+                    <span class="text">
+                        <a class="link" href="{{ data.site.Domain }}/blog/{{ data.blog.Id }}" target="_blank" rel="noopener noreferrer nofollow">{{ data.site.Domain }}/blog/{{ data.blog.Id }}</a>
+                    </span>
+                </div>
+                <div class="item">
+                    <i class="fa fa-file-text"></i>
+                    <span>许可协议：</span>
+                    <span class="text">本文使用《<a class="link" href="//creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener noreferrer nofollow">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0)</a>》协议授权</span>
+                </div>
+            </div>
+        </div>
+        <!--/copyright-->
+
+        <div class="comment-tier">
+            <div class="art-prev-wrap" title="上一篇">
+                {% if(data.prev) %}
+                    <i class="art-arr">&lt;&lt;</i>{{ data.prev | safe }}
+                {% else %}
+                    <i class="art-no">暂无上一篇</i>
+                {% endif %}
+            </div>
+            <div class="art-next-wrap" title="下一篇">
+                {% if(data.next) %}
+                    {{ data.next | safe }}<i class="art-arr">&gt;&gt;</i>
+                {% else %}
+                    <i class="art-no">暂无下一篇</i>
+                {% endif %}
+            </div>
+        </div>
+        <!--/上一页下一页-->
+
+        <div class="app-content-item app-comment-wrap">
+            <div class="blog-comment">
+                <div class="blog-tips-info"></div>
+                <form id="form1" name="form1" action="#">
+                    <div class="comment-info-main clearfix">
+                        <div class="comment-head">
+                            <div class="comment-headimg">
+                                <img class="avatar" width="50" height="50" src="/public/uploads/visitor.png" id="gravatarView" alt="头像" />
+                            </div>
+                        </div>
+                        <div class="comment-userinfo">
+                            <ul class="comment-wrap">
+                                <li>
+                                    <input class="input-text" type="text" value="" placeholder="您的昵称" size="70" autocomplete="off" name="username" id="author" />
+                                    <i class="require-red">*</i>
+                                </li>
+                                <li>
+                                    <input class="input-text" type="text" value="" placeholder="您的邮箱" size="70" name="email" id="email" />
+                                    <i class="require-red">*</i> <i class="input-after">
+                                        <a href="/blog/102" target="_blank">了解Gravatar</a>
+                                    </i>
+                                </li>
+                                <li>
+                                    <input class="input-text" type="text" value="" placeholder="您的主页" size="70" name="url" id="url" />
+                                </li>
+                                <li>
+                                    <textarea class="common-text blog-text" placeholder="您的评论内容" name="content" id="content" cols="30" rows="10"></textarea>
+                                    <i class="require-red">*</i>
+                                </li>
+                                <li>
+                                    <input class="input-text input-code" maxlength="4" placeholder="验 证 码" autocomplete="off" type="text" name="verify" size="4" id="verify" />
+                                    <img id="verifyImg" class="cp verify-img" src="/verify" alt="点击刷新验证码" title="点击刷新验证码" />
+                                </li>
+                                <li>
+                                    <input type="hidden" name="captchaId" value="" id="captchaId" />
+                                    <input type="hidden" name="bid" value="{{ data.blog.Id }}" id="bid" />
+                                    <input type="hidden" name="module" value="blog" />
+                                    <span class="comment-btn"><input class="btn blog-btn" id="sendComment" type="submit" value="发表" /></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--/comment-->
+
+            <div class="comment-list-wrap">
+                <ul class="comment-list">
+                    {% for vo in data.commentList %}
+                        <li>
+                            <div class="comment-headimg">
+                                <a href="{{ vo.Url }}" title="{{ vo.Username }}" target="_blank">
+                                    <img class="avatar" width="44" height="44" src="https://v1.alapi.cn/api/avatar?email={{ vo.Email }}&size=100" alt="Daxun">
+                                </a>
+                            </div>
+                            <div class="comment-main">
+                                <div class="comment-name clearfix">
+                                    <div class="comment-user">
+                                        <h1>{{ vo.Username }}</h1>
+                                    </div>
+                                    <div class="comment-revert">
+                                        <time class="comment-date">{{ vo.Createtime }}</time>
+                                    </div>
+                                </div>
+                                <div class="comment-content">{{ vo.Content | safe | escape }}</div>
+                                {% if vo.Child %}
+                                    {% for reply in vo.Child %}
+                                        <div class="reply-items clearfix">
+                                            <div class="reply-headimg"><a href="#" title="{{ reply.Username }}" target="_blank"><img  width="44" height="44" src="https://v1.alapi.cn/api/avatar?email={{ reply.Email }}&size=100" alt=""/></a></div>
+                                            <div class="reply-main">
+                                                <div class="commet-name clearfix">
+                                                    <div class="comment-user">
+                                                        <h1>{{ reply.Username }}</h1>
+                                                    </div>
+                                                    <div class="comment-revert">
+                                                        <time class="comment-date">{{ reply.Createtime }}</time>
+                                                        <!--<a href="javascript:void(0)" class="comment-replay">回复<i class="bot-sign"></i></a>-->
+                                                    </div>
+                                                </div>
+                                                {% autoescape off %}
+                                                    <div class="reply-content">{{ reply.Content }}</div>
+                                                {% endautoescape %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% empty %}
+                        <div class="no-data">暂无数据</div>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!--/comment-list-->
+        </div>
+        <!--/评论-->
+
+
+    </div>
+{% endblock %}
