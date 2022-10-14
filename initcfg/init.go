@@ -40,5 +40,4 @@ func (c *Config) initconfig() error {
 	}
 
 	return nil
-
 }

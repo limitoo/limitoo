@@ -3,7 +3,7 @@ module.exports = {
 
   theme: {
     screens: {
-      sm: "540px",
+      sm: "374px",
       // => @media (min-width: 576px) { ... }
 
       md: "720px",
@@ -20,7 +20,6 @@ module.exports = {
     },
     container: {
       center: true,
-      padding: "16px",
     },
     extend: {
       colors: {
@@ -43,5 +42,7 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+  ],
 };
