@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["./*.html", "./assets/**/*.js"],
+  content: ["./*.html", "./assets/**/*.js", "./*/*.htm*"],
 
   theme: {
     screens: {
@@ -44,5 +44,16 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/line-clamp'),
+    require("daisyui"),
   ],
+  daisyui: {
+    styled: true,
+    themes: true,
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+    prefix: "",
+    darkTheme: "dark",
+  },
 };

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
+	_ "github.com/flosch/pongo2-addons"
+
 	"limitoo/initcfg"
 	"limitoo/models"
 	"limitoo/routers"

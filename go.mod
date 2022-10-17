@@ -5,6 +5,9 @@ go 1.19
 require github.com/gin-gonic/gin v1.8.1
 
 require (
+	github.com/extemporalgenome/slug v0.0.0-20150414033109-0320c85e32e0 // indirect
+	github.com/flosch/go-humanize v0.0.0-20140728123800-3ba51eabe506 // indirect
+	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/flosch/pongo2/v6 v6.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gin-contrib/gzip v0.0.6 // indirect
@@ -18,6 +21,8 @@ require (
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.22.1 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
+	github.com/russross/blackfriday/v2 v2.0.1 // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -32,6 +37,7 @@ require (
 
 require (
 	github.com/flosch/pongo2 v0.0.0-20200913210552-0d938eb266f3
+	github.com/flosch/pongo2-addons v0.0.0-20210526150811-f969446c5b72
 	github.com/flosch/pongo2/v5 v5.0.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

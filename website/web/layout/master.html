@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<title>{% block title %}{% endblock %} - https://limitoo.com</title>
+		{% include "./css.html" %}
+    {% include "./meta.html" %}
+    <script>
+        if (top.location !== self.location) {
+            top.location = self.location
+        }
+    </script>
+		<script src="/assets/js/wow.min.js"></script>
+		<script>
+			new WOW().init();
+		</script>
+</head>
+<!-- // menu -->
+{% include "./menu.html" %}
+
+
+
+<!-- // body -->
+
+
+<section class="pt-20 pb-8 bg-[#eee]"">
+	<div class="container">
+		<div class="flex flex-wrap ltm-p-34">
+			<div class="w-full md:w-2/3 lg:w-2/3">
+				{% block content %} {% endblock %}
+		</div>
+		{% block right %}{% endblock %}
+	</div>
+	</div>
+</section>
+
+
+
+<!-- // footer -->
+{% include "./footer.html" %}
+<script src="/assets/js/main.js"></script>
+<script>
+	// ==== for menu scroll
+	const pageLink = document.querySelectorAll(".ud-menu-scroll");
+
+	pageLink.forEach((elem) => {
+		elem.addEventListener("click", (e) => {
+			e.preventDefault();
+			document.querySelector(elem.getAttribute("href")).scrollIntoView({
+				behavior: "smooth",
+				offsetTop: 1 - 60,
+			});
+		});
+	});
+
+	// section menu active
+	function onScroll(event) {
+		const sections = document.querySelectorAll(".ud-menu-scroll");
+		const scrollPos =
+			window.pageYOffset ||
+			document.documentElement.scrollTop ||
+			document.body.scrollTop;
+
+		for (let i = 0; i < sections.length; i++) {
+			const currLink = sections[i];
+			const val = currLink.getAttribute("href");
+			const refElement = document.querySelector(val);
+			const scrollTopMinus = scrollPos + 73;
+			if (
+				refElement.offsetTop <= scrollTopMinus &&
+				refElement.offsetTop + refElement.offsetHeight > scrollTopMinus
+			) {
+				document
+					.querySelector(".ud-menu-scroll")
+					.classList.remove("active");
+				currLink.classList.add("active");
+			} else {
+				currLink.classList.remove("active");
+			}
+		}
+	}
+
+	window.document.addEventListener("scroll", onScroll);
+</script>
+</body>
+</html>
+
+
+<!DOCTYPE html>

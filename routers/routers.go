@@ -19,11 +19,12 @@ func Configire(g *gin.Engine) *gin.Engine {
 	g.StaticFile("/favicon.ico", "./website/public/favicon.ico")
 	g.StaticFile("/admin/mini", "./website/public/api/init.json")
 
+	g.GET("/signin", web.SinginPage)
 	// website router
-
 	weburl := g.Group("")
 	{
 		weburl.GET("/", web.IndexPage)
+		weburl.GET("/posts/:id", web.ContentPage)
 	}
 
 	// admin router

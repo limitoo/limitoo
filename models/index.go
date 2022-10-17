@@ -40,10 +40,14 @@ func (t *News) TableName() string {
 }
 
 func GetListsNewsModel(PageNum int, PageSize int, maps interface{}) ([]News, error) {
-
 	var lists []News
 
-	err := DB.Self.Where(maps).Offset((PageNum - 1) * PageSize).Limit(PageSize).Order("id desc").Find(&lists).Error
+	start := (PageNum - 1) * PageSize
+	if PageNum == 1 {
+		start = 20
+	}
+
+	err := DB.Self.Where(maps).Offset(start).Limit(PageSize).Order("id desc").Find(&lists).Error
 	// err := DB.Self.Where(maps).Offset((PageNum - 1) * PageSize).Limit(PageSize).Order("id desc").Select("news.*, details.content").Joins(condition).Find(&lists).Error
 
 	if err != nil {

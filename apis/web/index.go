@@ -24,7 +24,7 @@ func IndexPage(c *gin.Context) {
 	data["lists"] = lists
 	data["totals"] = totals
 
-	c.HTML(http.StatusOK, "/web/index.html", pongo2.Context{
+	c.HTML(http.StatusOK, "/web/index/content.html", pongo2.Context{
 		"title": "Limitoo news",
 		"lists": lists,
 	})
